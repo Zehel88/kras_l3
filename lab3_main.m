@@ -91,28 +91,35 @@ varargout{1} = handles.output;
 %  2.6 
 % 1.5
 clc
-
+format compact
 %% 1.2 
 syms x1 x2 x3 u1 alf
+% Математическая модель вентильного двигаеля
 F=[-x1+x2*x3+u1;
     -x2-x1*x3-0.568*x3+0.1976;
     5.4574*(x2-x3)-0.5434];
-S = solve('-x1+x2*x3+u1=0','-x2-x1*x3-0.568*x3+0.1976=0','5.4574*(x2-x3)-0.5434=0','x1,x2,x3')
-
+% Нахождение равновесных точек 
+S = solve('-x1+x2*x3+u1=0','-x2-x1*x3-0.568*x3+0.1976=0','5.4574*(x2-x3)-0.5434=0','x1,x2,x3');
+Sx1=vpa(S.x1,4)
+Sx2=vpa(S.x2,4)
+Sx3=vpa(S.x3,4)
+% Линеаризация в окрестности точки равновесия
 for i=1:numel(S.x1)
     dF(i,1) = diff(F(i),x1);
     dF(i,2) = diff(F(i),x2);
     dF(i,3) = diff(F(i),x3);
 end
-
+% Характеристические матрицы
 A1 = vpa(subs(dF,{x1 x2 x3},{S.x1(1) S.x1(2) S.x1(3)}),4)
 A2 = vpa(subs(dF,{x1 x2 x3},{S.x2(1) S.x2(2) S.x2(3)}),4)
 A3 = vpa(subs(dF,{x1 x2 x3},{S.x3(1) S.x3(2) S.x3(3)}),4)
-
+% Характеристические полиномы матриц
 A1_p=vpa(det(alf*eye(numel(S.x1))-A1),4)
 A2_p=vpa(det(alf*eye(numel(S.x1))-A2),4)
 A3_p=vpa(det(alf*eye(numel(S.x1))-A3),4)
 % 
+return
+
 for i=1:numel(S.x1)
 for u1i=-18:-3
 
