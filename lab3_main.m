@@ -22,7 +22,7 @@ function varargout = lab3_main(varargin)
 
 % Edit the above text to modify the response to help lab3_main
 
-% Last Modified by GUIDE v2.5 06-Feb-2016 14:04:17
+% Last Modified by GUIDE v2.5 06-Feb-2016 15:27:36
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -110,41 +110,29 @@ for i=1:numel(S.x1)
     dF(i,3) = diff(F(i),x3);
 end
 % Характеристические матрицы
-A1 = vpa(subs(dF,{x1 x2 x3},{S.x1(1) S.x1(2) S.x1(3)}),4)
-A2 = vpa(subs(dF,{x1 x2 x3},{S.x2(1) S.x2(2) S.x2(3)}),4)
-A3 = vpa(subs(dF,{x1 x2 x3},{S.x3(1) S.x3(2) S.x3(3)}),4)
+A1 = vpa(subs(dF,{x1 x2 x3},{S.x1(1) S.x1(2) S.x1(3)}),4);
+A2 = vpa(subs(dF,{x1 x2 x3},{S.x2(1) S.x2(2) S.x2(3)}),4);
+A3 = vpa(subs(dF,{x1 x2 x3},{S.x3(1) S.x3(2) S.x3(3)}),4);
 % Характеристические полиномы матриц
-A1_p=vpa(det(alf*eye(numel(S.x1))-A1),4)
-A2_p=vpa(det(alf*eye(numel(S.x1))-A2),4)
-A3_p=vpa(det(alf*eye(numel(S.x1))-A3),4)
-% 
-return
+A1_p=vpa(collect(det(alf*eye(numel(S.x1))-A1),u1),4)
+A2_p=vpa(collect(det(alf*eye(numel(S.x1))-A2),u1),4)
+A3_p=vpa(collect(det(alf*eye(numel(S.x1))-A3),u1),4)
 
-for i=1:numel(S.x1)
+
+j=1;
 for u1i=-18:-3
+    L1(:,j)= solve(subs(A1_p,u1,u1i));
+    L2(:,j) = solve(subs(A2_p,u1,u1i));
+    L3 (:,j)= solve(subs(A3_p,u1,u1i)); 
+j=j+1;
+end
 
-    L1 = solve(subs(A1_p,u1,u1i));
-    L2 = solve(subs(A2_p,u1,u1i));
-    L3 = solve(subs(A3_p,u1,u1i)); 
-switch i
-    case 1
-        axes(handles.axes1)
-        plot(real(L1(1)),imag(L1(1)),'*'),hold on
-         plot(real(L1(2)),imag(L1(2)),'*'),hold on
-          plot(real(L1(3)),imag(L1(3)),'*'),hold on
-grid on
-    case 2
-        axes(handles.axes2)
-        plot(real(L2(1)),imag(L2(1)),'*'),hold on
-         plot(real(L2(2)),imag(L2(2)),'*'),hold on
-          plot(real(L2(3)),imag(L2(3)),'*'),hold on
-grid on
-    case 3
-        axes(handles.axes3)
-        plot(real(L3(1)),imag(L3(1)),'*'),hold on
-         plot(real(L3(2)),imag(L3(2)),'*'),hold on
-          plot(real(L3(3)),imag(L3(3)),'*'),hold on
-grid on
-end
-end
-end
+axes(handles.axes1)
+plot(real(L1),imag(L1),'b*'),grid on
+xlabel({'корневой годограф для 1-го','характеристического полинома'})
+axes(handles.axes2)
+plot(real(L2),imag(L2),'b*'),grid on
+xlabel({'корневой годограф для 2-го','характеристического полинома'})
+axes(handles.axes3)
+plot(real(L3),imag(L3),'b*'),grid on
+xlabel({'корневой годограф для 3-го','характеристического полинома'})

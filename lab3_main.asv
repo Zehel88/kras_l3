@@ -91,42 +91,45 @@ varargout{1} = handles.output;
 %  2.6 
 % 1.5
 clc
-
+format compact
 %% 1.2 
 syms x1 x2 x3 u1 alf
+% Математическая модель вентильного двигаеля
 F=[-x1+x2*x3+u1;
     -x2-x1*x3-0.568*x3+0.1976;
     5.4574*(x2-x3)-0.5434];
-S = solve('-x1+x2*x3+u1=0','-x2-x1*x3-0.568*x3+0.1976=0','5.4574*(x2-x3)-0.5434=0','x1,x2,x3')
-
+% Нахождение равновесных точек 
+S = solve('-x1+x2*x3+u1=0','-x2-x1*x3-0.568*x3+0.1976=0','5.4574*(x2-x3)-0.5434=0','x1,x2,x3');
+Sx1=vpa(S.x1,4)
+Sx2=vpa(S.x2,4)
+Sx3=vpa(S.x3,4)
+% Линеаризация в окрестности точки равновесия
 for i=1:numel(S.x1)
     dF(i,1) = diff(F(i),x1);
     dF(i,2) = diff(F(i),x2);
     dF(i,3) = diff(F(i),x3);
 end
+% Характеристические матрицы
+A1 = vpa(subs(dF,{x1 x2 x3},{S.x1(1) S.x1(2) S.x1(3)}),4);
+A2 = vpa(subs(dF,{x1 x2 x3},{S.x2(1) S.x2(2) S.x2(3)}),4);
+A3 = vpa(subs(dF,{x1 x2 x3},{S.x3(1) S.x3(2) S.x3(3)}),4);
+% Характеристические полиномы матриц
+A1_p=vpa(collect(det(alf*eye(numel(S.x1))-A1),u1),4)
+A2_p=vpa(collect(det(alf*eye(numel(S.x1))-A2),u1),4)
+A3_p=vpa(collect(det(alf*eye(numel(S.x1))-A3),u1),4)
 
-A1 = vpa(subs(dF,{x1 x2 x3},{S.x1(1) S.x1(2) S.x1(3)}),4)
-A2 = vpa(subs(dF,{x1 x2 x3},{S.x2(1) S.x2(2) S.x2(3)}),4)
-A3 = vpa(subs(dF,{x1 x2 x3},{S.x3(1) S.x3(2) S.x3(3)}),4)
 
-A1_p=vpa(det(alf*eye(numel(S.x1))-A1),4)
-A2_p=vpa(det(alf*eye(numel(S.x1))-A2),4)
-A3_p=vpa(det(alf*eye(numel(S.x1))-A3),4)
-% 
-for i=1:numel(S.x1)
+j=1;
 for u1i=-18:-3
 
-    L1 = solve(subs(A1_p,u1,u1i));
-    L2 = solve(subs(A2_p,u1,u1i));
-    L3 = solve(subs(A3_p,u1,u1i)); 
-switch i
-    case 1
-        ax
-        plot(real(L1(1)),imag(L1(1)),real(L1(2)),imag(L1(2)),real(L1(3)),imag(L1(3))), grid on
-    case 2
-        plot(real(L2(1)),imag(L2(1)),real(L2(2)),imag(L2(2)),real(L2(3)),imag(L2(3))), grid on
-    case 3
-        plot(real(L3(1)),imag(L3(1)),real(L3(2)),imag(L3(2)),real(L3(3)),imag(L3(3))), grid on
+    L1(:,j)= solve(subs(A1_p,u1,u1i));
+    
+    L2(:,j) = solve(subs(A2_p,u1,u1i));
+    
+    L3 (:,j)= solve(subs(A3_p,u1,u1i)); 
+j=j+1;
 end
-end
-end
+
+axes(handles.axes1)
+plot(real(L1),imag(L1),'')
+
