@@ -134,7 +134,7 @@ end
 % (L3(:,10))
 
 axes(handles.axes1)
-plot(real(L1),imag(L1),'*'),grid on
+plot(real(L1),imag(L1),'b*'),grid on
 xlabel({'корневой годограф для 1-го','характеристического полинома'})
 axes(handles.axes2)
 plot(real(L2),imag(L2),'b*'),grid on
@@ -145,7 +145,7 @@ xlabel({'корневой годограф для 3-го','характеристического полинома'})
 
 
 
-u1=-10;
+u1=-11;
  h = 0.01;
  t=0:h:100;
 x_1(1)=0;
@@ -163,24 +163,24 @@ plot3(x_1,x_2,x_3), grid on
 
 T=50;
 n_=[-18:1:-3];
-x1=10;
+x1=1;
 x2=1;
 x3=1;
-for j=1:length(n_)    
+for j=1:length(n_)   
     n=n_(j);
     for k=1:T
         x_1(1)=x1*(1+(10^-7)*rand); 
         x_2(1)=x2*(1+(10^-7)*rand);
         x_3(1)=x3*(1+(10^-7)*rand);
         for i=1:(length(t)-1)           
-            x_1(i+1)=x_1(i)+h*(-x_1(i) + x_2(i)*x_3(i)+u1);
+            x_1(i+1)=x_1(i)+h*(-x_1(i) + x_2(i)*x_3(i)+n);
             x_2(i+1)=x_2(i)+h*(-x_2(i)-x_1(i)*x_3(i)-.568*x_3(i)+0.1976);
             x_3(i+1)=x_3(i)+h*(5.4574*(x_2(i)-x_3(i))+.5434);
         end
-      yk(j,k)=x_1(i+1);
+%       yk(j,k)=x_1(i+1);
           axes(handles.axes5)
-        plot(n,yk(j,k),'k-*'), grid on, hold on, title('Бифуркационная диаграмма')     
-     
+%         plot(n,yk(j,k),'k-*'), grid on, hold on, title('Бифуркационная диаграмма')     
+     plot(n,x_1(i),'k-*'), grid on, hold on, title('Бифуркационная диаграмма')    
     end
 
 
