@@ -22,7 +22,7 @@ function varargout = lab3_main(varargin)
 
 % Edit the above text to modify the response to help lab3_main
 
-% Last Modified by GUIDE v2.5 06-Feb-2016 17:37:05
+% Last Modified by GUIDE v2.5 09-Feb-2016 16:30:56
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -237,47 +237,37 @@ xlabel({'корневой годограф для 3-го','характеристического полинома'})
 
 % % ========================Построение аттрактора для критического значения
 % Шаг интегрирования
-  h=0.01;
+  h=0.001;
 % Интервал моделирования
-  t=[0:h:100];
+  t=0:h:50;
 % Численное интегрирование
 [T, X] = ode45(@odefun,t,[1;0;0], [], mu_kr);
 axes(handles.axes4)
 plot3(X(:, 1), X(:, 2), X(:, 3)); grid on
 
 % % ====================================Построение бифуркационной диаграммы
+T=50;
+
+x1=1; x2=0; x3=0;
+for j=1:length(mu)    
+
+    for k=1:T
+        x_1(1)=x1*(1+(10^-7)*rand); 
+        x_2(1)=x2*(1+(10^-7)*rand);
+        x_3(1)=x3*(1+(10^-7)*rand);
+        
+        for i=1:(length(t)-1)      
+            x_1(i+1)=x_1(i)+h*(-10*x_1(i)+(x_2(i)-x_3(i))*mu(j));
+            x_2(i+1)=x_2(i)+h*(12-x_2(i)+x_1(i)*x_3(i));
+            x_3(i+1)=x_3(i)+h*(-x_1(i)*x_2(i)-x_3(i)+12);
+        end
+       axes(handles.axes5)
+        plot(mu(j),x_1(i+1),'k-*'), grid on, hold on  , title('Бифуркационная диаграмма')   
+    end
 
 
+end
 
-
-% NumberA=150;
-% % разброс параметра 
-% A=linspace(100,250,NumberA);
-%  
-% N=1000;
-% % число точек решения, которые войдут в диаграмму
-% Num2Bif=10;
-% b=10;
-% c=12;
-% for j=1:NumberA
-%     a=A(j);
-%     X(1,:)=0;
-%     X(2,:)=12;
-%     X(3,:)=1;
-%     h=1e-3;
-%     for i=1:N-1
-%         X(1,i+1)=X(1,i)+h*(-b*X(1,i)+a*(X(2,i)-X(3,i)));
-%         X(2,i+1)=X(2,i)+h*(c-X(2,i)+X(1,i)*X(3,i));
-%         X(3,i+1)=X(3,i)+h*(-X(1,i)*X(2,i)-X(3,i)+c);
-%     end
-%     Bif(j,1:Num2Bif)=X(1,N-Num2Bif+1:N);
-% end
-%  
-% axes(handles.axes5)
-% plot(A,Bif,'k*-','LineWidth',2)
-% grid on
-% xlabel('\mu')
-% ylabel('X_1')
 
 
 function dxdt = odefun(t, x, mu)
