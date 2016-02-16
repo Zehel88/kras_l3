@@ -190,6 +190,8 @@ format compact
 
 %% ========================        1.6  ===================================
 clc
+set(handles.uitable1,'RowName',{'Первый метод','Второй метод'});
+
 syms x1 x2 x3 m
 % Странный аттрактора Дж. Валлеса 2
 F=[-10*x1+m*(x2-x3);
@@ -247,32 +249,33 @@ axes(handles.axes4)
 plot3(Xi(:,1), Xi(:, 2), Xi(:, 3)); grid on
 title(['Aттрактор при \mu=',num2str(mu_kr)])
 % % ====================================Построение бифуркационной диаграммы
-Tt=20;
-
-x1=Xi(fix(numel(Xi(:,1))/2),1);
-x2=Xi(fix(numel(Xi(:,1))/2),2);
-x3=Xi(fix(numel(Xi(:,1))/2),3);
-for j=1:length(mu)    
-
-    for k=1:Tt
-        x_1(1)=x1*(1+(10^-7)*rand); 
-        x_2(1)=x2*(1+(10^-7)*rand);
-        x_3(1)=x3*(1+(10^-7)*rand);
-        
-        for i=1:(length(T)-1)      
-            x_1(i+1)=x_1(i)+h*(-10*x_1(i)+(x_2(i)-x_3(i))*mu(j));
-            x_2(i+1)=x_2(i)+h*(12-x_2(i)+x_1(i)*x_3(i));
-            x_3(i+1)=x_3(i)+h*(-x_1(i)*x_2(i)-x_3(i)+12);
-        end
-       axes(handles.axes5)
-        plot(mu(j),x_1(i+1),'k-*'), grid on, hold on  , title('Бифуркационная диаграмма')   
-    end
-
-
-end
+% Tt=20;
+% 
+% x1=Xi(fix(numel(Xi(:,1))/2),1);
+% x2=Xi(fix(numel(Xi(:,1))/2),2);
+% x3=Xi(fix(numel(Xi(:,1))/2),3);
+% for j=1:length(mu)    
+% 
+%     for k=1:Tt
+%         x_1(1)=x1*(1+(10^-7)*rand); 
+%         x_2(1)=x2*(1+(10^-7)*rand);
+%         x_3(1)=x3*(1+(10^-7)*rand);
+%         
+%         for i=1:(length(T)-1)      
+%             x_1(i+1)=x_1(i)+h*(-10*x_1(i)+(x_2(i)-x_3(i))*mu(j));
+%             x_2(i+1)=x_2(i)+h*(12-x_2(i)+x_1(i)*x_3(i));
+%             x_3(i+1)=x_3(i)+h*(-x_1(i)*x_2(i)-x_3(i)+12);
+%         end
+%        axes(handles.axes5)
+%         plot(mu(j),x_1(i+1),'k-*'), grid on, hold on  , title('Бифуркационная диаграмма')   
+%     end
+% 
+% 
+% end
 
 %% Определение показателя Ляпунова (1 подход) 
-mu_ex=[109;157]'
+mu_ex=[109 157]
+set(handles.uitable1,'ColumnName',{'109','157'})
     % Шаг интегрирования
   h=0.001;
 % Интервал моделирования
@@ -295,7 +298,6 @@ r0=norm(X_(k, :)*bet-X_(k,:));
     end
  L1(i)=1/T(end)*sum(lam); 
 end
-   L1
 %%     Определение показателя Ляпунова (2 подход)
 
 tau=0.1;
@@ -337,8 +339,9 @@ end
 
 L2(M)=(1/T(end))*sum(log(L));
  end
-L2
-
+ 
+set(handles.uitable1,'ColumnWidth',{50,50});
+set(handles.uitable1,'DaTa',[L1;L2]);
 
 
 
