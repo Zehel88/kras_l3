@@ -22,7 +22,7 @@ function varargout = lab3_main(varargin)
 
 % Edit the above text to modify the response to help lab3_main
 
-% Last Modified by GUIDE v2.5 17-Feb-2016 17:15:45
+% Last Modified by GUIDE v2.5 17-Feb-2016 21:57:11
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -64,15 +64,7 @@ guidata(hObject, handles);
 
 % --- Outputs from this function are returned to the command line.
 function varargout = lab3_main_OutputFcn(hObject, eventdata, handles) 
-% varargout  cell array for returning output args (see VARARGOUT);
-% hObject    handle to figure
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Get default command line output from handles structure
 varargout{1} = handles.output;
-
-
 %%  variant 33
 % 1.2
 % -14:-4 (1)
@@ -263,7 +255,7 @@ x_3(i+1,k)=x_3(i,k)+h*(5.4574*(x_2(i,k)-x_3(i,k))+0.5434);
 
 end
 hold off
-%% ќпределение показател€ Ћ€пунова (1 подход) 
+% ќпределение показател€ Ћ€пунова (1 подход) 
 u1_ex=[-14 -4]
 set(handles.uitable1,'ColumnName',{'-14','-4'})
     % Ўаг интегрировани€
@@ -288,7 +280,7 @@ r0=norm(X_(k, :)*bet-X_(k,:));
     end
  L1(ii)=1/T(end)*sum(lam); 
 end
-%%     ќпределение показател€ Ћ€пунова (2 подход)
+%     ќпределение показател€ Ћ€пунова (2 подход)
 
 tau=0.1;
 N_var=tau/h;
@@ -430,7 +422,7 @@ tic
 
 end
 hold off
-%% ќпределение показател€ Ћ€пунова (1 подход) 
+% ќпределение показател€ Ћ€пунова (1 подход) 
 mu_ex=[109 157]
 set(handles.uitable1,'ColumnName',{'109','157'})
     % Ўаг интегрировани€
@@ -455,7 +447,7 @@ r0=norm(X_(k, :)*bet-X_(k,:));
     end
  L1(ii)=1/T(end)*sum(lam); 
 end
-%%     ќпределение показател€ Ћ€пунова (2 подход)
+%     ќпределение показател€ Ћ€пунова (2 подход)
 
 tau=0.1;
 N_var=tau/h;
@@ -504,7 +496,22 @@ set(handles.pushbutton1,'String','¬ыполнить');
 set(handles.pushbutton1,'Enable','on');
 
         case 3
+
         case 4
+%% ========================        2.2  ===================================
+%  убическое отображение
+syms x a
+f=(1-4*a)*(x-4*a*x+4*a*x^3)+4*a*(x-4*a*x+4*a*x^3)^3
+res=solve(f,'x')
+vpa(res,4)
+
+
+
+
+
+
+
+
         case 5
             
 %     switch end
@@ -519,4 +526,33 @@ if get(handles.checkbox1,'Value')==1
     set(handles.checkbox1,'String','¬кл');
 else
     set(handles.checkbox1,'String','¬ыкл');
+end
+
+
+
+function togglebutton1_Callback(hObject, eventdata, handles)
+if get(handles.togglebutton1,'Value')==1
+    set(handles.togglebutton1,'String','„ать 2');
+    set(handles.radiobutton4,'Visible','on');
+    set(handles.radiobutton5,'Visible','on');
+    
+    set(handles.radiobutton1,'Visible','off');
+    set(handles.radiobutton2,'Visible','off');
+    set(handles.radiobutton3,'Visible','off');
+    
+    set(handles.axes1,'Visible','off');set(handles.axes2,'Visible','off');
+    set(handles.axes3,'Visible','off');set(handles.axes4,'Visible','off');
+    set(handles.axes5,'Visible','off');
+else
+    set(handles.togglebutton1,'String','„ать 1');
+        set(handles.radiobutton4,'Visible','off');
+    set(handles.radiobutton5,'Visible','off');
+    
+    set(handles.radiobutton1,'Visible','on');
+    set(handles.radiobutton2,'Visible','on');
+    set(handles.radiobutton3,'Visible','on');
+    
+set(handles.axes1,'Visible','on');set(handles.axes2,'Visible','on');
+    set(handles.axes3,'Visible','on');set(handles.axes4,'Visible','on');
+    set(handles.axes5,'Visible','on');
 end
