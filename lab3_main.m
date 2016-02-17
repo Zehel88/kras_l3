@@ -22,7 +22,7 @@ function varargout = lab3_main(varargin)
 
 % Edit the above text to modify the response to help lab3_main
 
-% Last Modified by GUIDE v2.5 09-Feb-2016 16:30:56
+% Last Modified by GUIDE v2.5 17-Feb-2016 15:11:35
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -92,102 +92,76 @@ varargout{1} = handles.output;
 % 1.5
 % clc
 format compact
-%% 1.2 
-% syms x1 x2 x3 u1 alf
-% % Математическая модель вентильного двигаеля
-% F=[-x1+x2*x3+u1;
-%     -x2-x1*x3-0.568*x3+0.1976;
-%     5.4574*(x2-x3)-0.5434];
-% % Нахождение равновесных точек 
-% S = solve('-x1+x2*x3+u1=0','-x2-x1*x3-0.568*x3+0.1976=0','5.4574*(x2-x3)-0.5434=0','x1,x2,x3');
-% Sx1=vpa(S.x1,4)
-% Sx2=vpa(S.x2,4)
-% Sx3=vpa(S.x3,4)
-% 
-% % Линеаризация в окрестности точки равновесия
-% for i=1:numel(S.x1)
-%     dF(i,1) = diff(F(i),x1);
-%     dF(i,2) = diff(F(i),x2);
-%     dF(i,3) = diff(F(i),x3);
-% end
-% % Характеристические матрицы
-% A1 = vpa(subs(dF,{x1 x2 x3},{S.x1(1) S.x1(2) S.x1(3)}),4);
-% A2 = vpa(subs(dF,{x1 x2 x3},{S.x2(1) S.x2(2) S.x2(3)}),4);
-% A3 = vpa(subs(dF,{x1 x2 x3},{S.x3(1) S.x3(2) S.x3(3)}),4);
-% % Характеристические полиномы матриц
-% A1_p=vpa((det(alf*eye(numel(S.x1))-A1)),4)
-% A2_p=vpa((det(alf*eye(numel(S.x1))-A2)),4)
-% A3_p=vpa((det(alf*eye(numel(S.x1))-A3)),4)
-% 
-% 
-% 
-% 
-% j=1;
-% for u1i=-18:1:-3
-%     L1(:,j)= solve(subs(A1_p,u1,u1i));
-%     L2(:,j) = solve(subs(A2_p,u1,u1i));
-%     L3 (:,j)= solve(subs(A3_p,u1,u1i)); 
-% j=j+1;
-% end
-% % 
-% 
-% 
-% axes(handles.axes1)
-% plot(real(L1),imag(L1),'b*'),grid on
-% xlabel({'корневой годограф для 1-го','характеристического полинома'})
-% axes(handles.axes2)
-% plot(real(L2),imag(L2),'b*'),grid on
-% xlabel({'корневой годограф для 2-го','характеристического полинома'})
-% axes(handles.axes3)
-% plot(real(L3),imag(L3),'b*'),grid on
-% xlabel({'корневой годограф для 3-го','характеристического полинома'})
-% 
-% 
-% 
-% u1=-15;
-%  h = 0.01;
-%  t=0:h:100;
-% x_1(1)=0;
-% x_2(1)=0;
-% x_3(1)=0;
-% for i=1:(length(t)-1)
-%     x_1(i+1)=x_1(i)+h*(-x_1(i) + x_2(i)*x_3(i)+u1);
-%     x_2(i+1)=x_2(i)+h*(-x_2(i)-x_1(i)*x_3(i)-.568*x_3(i)+0.1976);
-%     x_3(i+1)=x_3(i)+h*(5.4574*(x_2(i)-x_3(i))-.5434);
-% end
-% axes(handles.axes4)
-% plot3(x_1,x_2,x_3), grid on
-% 
-% 
-% 
-% T=50;
-% n_=[-18:1:-3];
-% x1=1;
-% x2=1;
-% x3=1;
-% for j=1:length(n_)   
-%     n=n_(j);
-%     for k=1:T
-%         x_1(1)=x1*(1+(10^-7)*rand); 
-%         x_2(1)=x2*(1+(10^-7)*rand);
-%         x_3(1)=x3*(1+(10^-7)*rand);
-%         for i=1:(length(t)-1)           
-%             x_1(i+1)=x_1(i)+h*(-x_1(i) + x_2(i)*x_3(i)+n);
-%             x_2(i+1)=x_2(i)+h*(-x_2(i)-x_1(i)*x_3(i)-.568*x_3(i)+0.1976);
-%             x_3(i+1)=x_3(i)+h*(5.4574*(x_2(i)-x_3(i))-.5434);
-%         end
-% %       yk(j,k)=x_1(i+1);
-%           axes(handles.axes5)
-% %         plot(n,yk(j,k),'k-*'), grid on, hold on, title('Бифуркационная диаграмма')     
-%      plot(n,x_1(i),'k-*'), grid on, hold on, title('Бифуркационная диаграмма')    
-%     end
-% 
-% 
-% end
-%       hold off
 
 
+function dxdt = odefun16(t, x, mu)
+ 
+dxdt = zeros(3, 1);
+dxdt(1) = - 10 * x(1) + mu * (x(2) - x(3));
+dxdt(2) = 12 - x(2) + x(1) * x(3);
+dxdt(3) = - x(1) * x(2) - x(3) + 12;
 
+
+% --- Executes on button press in radiobutton1.
+function radiobutton1_Callback(hObject, eventdata, handles)
+if get(handles.radiobutton1,'Value')==1
+set(handles.radiobutton2,'Value',0);
+set(handles.radiobutton3,'Value',0);
+set(handles.radiobutton4,'Value',0);
+set(handles.radiobutton5,'Value',0);
+end
+
+% --- Executes on button press in radiobutton2.
+function radiobutton2_Callback(hObject, eventdata, handles)
+if get(handles.radiobutton2,'Value')==1
+set(handles.radiobutton1,'Value',0);
+set(handles.radiobutton3,'Value',0);
+set(handles.radiobutton4,'Value',0);
+set(handles.radiobutton5,'Value',0);
+end
+
+% --- Executes on button press in radiobutton3.
+function radiobutton3_Callback(hObject, eventdata, handles)
+if get(handles.radiobutton3,'Value')==1
+set(handles.radiobutton2,'Value',0);
+set(handles.radiobutton1,'Value',0);
+set(handles.radiobutton4,'Value',0);
+set(handles.radiobutton5,'Value',0);
+end
+
+% --- Executes on button press in radiobutton4.
+function radiobutton4_Callback(hObject, eventdata, handles)
+if get(handles.radiobutton4,'Value')==1
+set(handles.radiobutton2,'Value',0);
+set(handles.radiobutton3,'Value',0);
+set(handles.radiobutton1,'Value',0);
+set(handles.radiobutton5,'Value',0);
+end
+
+% --- Executes on button press in radiobutton5.
+function radiobutton5_Callback(hObject, eventdata, handles)
+if get(handles.radiobutton5,'Value')==1
+set(handles.radiobutton2,'Value',0);
+set(handles.radiobutton3,'Value',0);
+set(handles.radiobutton4,'Value',0);
+set(handles.radiobutton1,'Value',0);
+end
+
+% --- Executes on button press in pushbutton1.
+function pushbutton1_Callback(hObject, eventdata, handles)
+% Получаем новер активного задания
+active_var=find([get(handles.radiobutton1,'Value');
+            get(handles.radiobutton2,'Value');
+            get(handles.radiobutton3,'Value');
+            get(handles.radiobutton4,'Value');
+            get(handles.radiobutton5,'Value')] ==1);
+        if isempty(active_var)==1
+            errordlg('Вы не выбрали вариант задания!');
+        else
+            
+    switch active_var
+        case 1
+        case 2
 %% ========================        1.6  ===================================
 clc
 set(handles.uitable1,'RowName',{'Первый метод','Второй метод'});
@@ -244,7 +218,7 @@ title({'корневой годограф для 3-го','характеристического полинома'})
 % Интервал моделирования
   T=0:h:100;
 % Численное интегрирование
-[Ti, Xi] = ode45(@odefun,T,[1;0;0], [], mu_kr);
+[Ti, Xi] = ode45(@odefun16,T,[1;0;0], [], mu_kr);
 axes(handles.axes4)
 plot3(Xi(:,1), Xi(:, 2), Xi(:, 3)); grid on
 title(['Aттрактор при \mu=',num2str(mu_kr)])
@@ -284,7 +258,7 @@ set(handles.uitable1,'ColumnName',{'109','157'})
   bet=1.1;
 for i=1:numel(mu_ex)  
 % Опорная траектория
-[Ti, Xi] = ode45(@odefun,T,[1;0;0], [], mu_ex(i));
+[Ti, Xi] = ode45(@odefun16,T,[1;0;0], [], mu_ex(i));
 % Точки на опорной траетории       
 T_=Ti(1:inv(h):end);
 X_=Xi(1:inv(h):end,:); 
@@ -292,7 +266,7 @@ X_=Xi(1:inv(h):end,:);
 for k = 1 : T(end)
 %         r0 = delta * sqrt(3);
 r0=norm(X_(k, :)*bet-X_(k,:));
-        xxx = ode45(@odefun, [T_(k) : 0.01 : T_(k + 1)],X_(k, :)*bet,[], mu_ex(i));
+        xxx = ode45(@odefun16, [T_(k) : 0.01 : T_(k + 1)],X_(k, :)*bet,[], mu_ex(i));
         r1 = norm(xxx.y(:,end) - X_(k + 1, :)');
         lam(k)=log(r1/r0);
     end
@@ -342,16 +316,11 @@ L2(M)=(1/T(end))*sum(log(L));
  
 set(handles.uitable1,'ColumnWidth',{50,50});
 set(handles.uitable1,'DaTa',[L1;L2]);
-
-
-
-
-
-
-
-function dxdt = odefun(t, x, mu)
- 
-dxdt = zeros(3, 1);
-dxdt(1) = - 10 * x(1) + mu * (x(2) - x(3));
-dxdt(2) = 12 - x(2) + x(1) * x(3);
-dxdt(3) = - x(1) * x(2) - x(3) + 12;
+        case 3
+        case 4
+        case 5
+            
+%     switch end
+    end
+% if empty
+        end
