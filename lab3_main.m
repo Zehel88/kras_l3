@@ -499,16 +499,111 @@ set(handles.pushbutton1,'Enable','on');
 
         case 4
 %% ========================        2.2  ===================================
-% Кубическое отображение
-syms x a
-f=(1-4*a)*(x-4*a*x+4*a*x^3)+4*a*(x-4*a*x+4*a*x^3)^3
-res=solve(f,'x')
-vpa(res,4)
+clc
+syms a x
+f=(1-4*a)*x+4*a*x^3;
+
+% ===============================Определение точек равновесия периода T = 1
+f_T1 = f
+xe_T1 = solve(f_T1 - x,'x')
+% Определение значения производной в точках равновесия
+for k = 1 : length(xe_T1)
+        df_T1(k) = simplify(subs(diff(f_T1, x), x, xe_T1(k)));
+    end
+df_T1 = df_T1.'
+
+% Определение значений a при которых неподвижные точки теряют гиперболичность
+    a_T1 = [];
+    for k = 1 : length(xe_T1)
+        temp = double(solve(df_T1(k) - 1,'a'));
+        for r = 1 : length(temp)
+            if temp(r) > 0 & isempty(find(a_T1 == temp(r))) & isreal(temp(r))
+                a_T1 = [a_T1; temp(r)];
+            end
+        end
+        temp = double(solve(df_T1(k) + 1, 'a'));
+        for r = 1 : length(temp)
+            if temp(r) > 0 & isempty(find(a_T1 == temp(r))) & isreal(temp(r))
+                a_T1 = [a_T1; temp(r)];
+            end
+        end
+    end
+    a_T1
+% Cтроим диаграмму кубического отображения      
+f_T1_in=inline(f_T1);
+xd=-1:0.01:1;
+axes(handles.axes6)
+plot(xd,f_T1_in(0.4,xd)),grid on
+title('Диаграмма кубического отобр. при Т=1, \alpha=0.4')
+
+%=============================== Определение точек равновесия периода T = 2
+    f_T2 = simplify(subs(f_T1, x, f_T1))
+    
+    xe_T2 = solve(f_T2 - x, 'x')
+    for k = 1 : length(xe_T2)
+        df_T2(k) = simplify(subs(diff(f_T2, x), x, xe_T2(k)));
+    end
+    df_T2 = df_T2.'
+    
+% Определение значений a при которых неподвижные точки теряют гиперболичность
+    a_T2 = [];
+    for k = 1 : length(xe_T2)
+        temp = double(solve(df_T2(k) - 1, 'a'));
+        for r = 1 : length(temp)
+            if temp(r) > 0 & isempty(find(a_T2  == temp(r))) & isreal(temp(r))
+                a_T2  = [a_T2 ; temp(r)];
+            end
+        end
+        temp = double(solve(df_T2(k) + 1, 'a'));
+        for r = 1 : length(temp)
+            if temp(r) > 0 & isempty(find(a_T2  == temp(r))) & isreal(temp(r))
+                a_T2  = [a_T2 ; temp(r)];
+            end
+        end
+    end
+    a_T2 
+% Cтроим диаграмму кубического отображения      
+f_T2_in=inline(f_T2);
+xd=-1:0.01:1;
+axes(handles.axes7)
+plot(xd,f_T2_in(0.75,xd)),grid on
+title('Диаграмма кубического отобр. при Т=2, \alpha=0.75')
 
 
+% ===============================Определение точек равновесия периода T = 4
+    f_T4 = collect(simplify(subs(f_T1, x, f_T2)),x)
 
+% Cтроим диаграмму кубического отображения      
+f_T4_in=inline(f_T4);
+xd=-1:0.01:1;
+axes(handles.axes8)
+plot(xd,f_T4_in(0.8,xd)),grid on
+title('Диаграмма кубического отобр. при Т=4, \alpha=0.8')
 
+% Определяем показатель Ляпунова
+A=[0.44 0.77];
+for i=1:numel(A)
+    alpha(i) =subs( 1/2 * log(abs(subs(diff(f, x), x, 0))),a,A(i));
+end
+double(alpha)
+%======================================= Построение бифуркационной диаграммы
+    a = [];
+    x = [];
+    iters = 1000;
+    for k = 0 : 0.01 : 1
+        for r = 1 : 20
+            x = [x qub(rand, k, iters)];
+            a = [a k];
+        end
+    end
+    axes(handles.axes9)
+    plot(a, x, 'k*','LineWidth', 2); grid on;
+title('Бифуркационная диаграмма')  
 
+set(handles.uitable1,'RowName',{'Первый метод'});
+set(handles.uitable1,'ColumnName',{'0.44','0.77'})
+set(handles.uitable1,'ColumnWidth',{50,50});
+set(handles.uitable1,'DaTa',double(alpha))
 
 
 
@@ -519,6 +614,12 @@ vpa(res,4)
 % if empty
         end
 
+function x = qub(x0, a, iters)
+ 
+for k = 1 : iters
+    x = (1-4*a)*x0+4*a*x0^3;
+    x0 = x;
+end
 
 % --- Executes on button press in checkbox1.
 function checkbox1_Callback(hObject, eventdata, handles)
@@ -531,6 +632,16 @@ end
 
 
 function togglebutton1_Callback(hObject, eventdata, handles)
+axes(handles.axes1),cla
+axes(handles.axes2),cla
+axes(handles.axes3),cla
+axes(handles.axes4),cla
+axes(handles.axes5),cla
+axes(handles.axes6),cla
+axes(handles.axes7),cla
+axes(handles.axes8),cla
+axes(handles.axes9),cla
+
 if get(handles.togglebutton1,'Value')==1
     set(handles.togglebutton1,'String','Чать 2');
     set(handles.radiobutton4,'Visible','on');
@@ -543,6 +654,11 @@ if get(handles.togglebutton1,'Value')==1
     set(handles.axes1,'Visible','off');set(handles.axes2,'Visible','off');
     set(handles.axes3,'Visible','off');set(handles.axes4,'Visible','off');
     set(handles.axes5,'Visible','off');
+    
+    set(handles.axes6,'Visible','on');set(handles.axes7,'Visible','on');
+    set(handles.axes8,'Visible','on');set(handles.axes9,'Visible','on');
+    
+    
 else
     set(handles.togglebutton1,'String','Чать 1');
         set(handles.radiobutton4,'Visible','off');
@@ -555,4 +671,7 @@ else
 set(handles.axes1,'Visible','on');set(handles.axes2,'Visible','on');
     set(handles.axes3,'Visible','on');set(handles.axes4,'Visible','on');
     set(handles.axes5,'Visible','on');
+    
+    set(handles.axes6,'Visible','off');set(handles.axes7,'Visible','off');
+    set(handles.axes8,'Visible','off');set(handles.axes9,'Visible','off');
 end
