@@ -500,6 +500,8 @@ set(handles.pushbutton1,'Enable','on');
         case 4
 %% ========================        2.2  ===================================
 clc
+set(handles.axes8,'Visible','on');
+axes()
 syms a x
 f=(1-4*a)*x+4*a*x^3;
 
@@ -581,11 +583,21 @@ plot(xd,f_T4_in(0.8,xd)),grid on
 title('Диаграмма кубического отобр. при Т=4, \alpha=0.8')
 
 % Определяем показатель Ляпунова
-A=[0.44 0.77];
-for i=1:numel(A)
-    alpha(i) =subs( 1/2 * log(abs(subs(diff(f, x), x, 0))),a,A(i));
+A=[0.44 0.77]
+for h=1:numel(A)
+x(1)=0;
+lam=0;
+for i=1:100
+        x(i+1) = (1-4*A(h))*x(i)+4*A(h)*x(i)^3;
+        lam = lam + log(abs(12*A(h)*x(i)^2+1-4*A(h)));
+     
+    end
+ 
+ 
+L(h) = double((1/length(x))*lam);
 end
-double(alpha)
+
+
 %======================================= Построение бифуркационной диаграммы
     a = [];
     x = [];
@@ -601,14 +613,122 @@ double(alpha)
 title('Бифуркационная диаграмма')  
 
 set(handles.uitable1,'RowName',{'Первый метод'});
-set(handles.uitable1,'ColumnName',{'109','157'})
+set(handles.uitable1,'ColumnName',{'0.44','0.77'})
 set(handles.uitable1,'ColumnWidth',{50,50});
-set(handles.uitable1,'DaTa',double(alpha))
+set(handles.uitable1,'DaTa',L)
 
 
 
         case 5
-            
+%%  2.6     ==================             =========== Отображение Хенона
+clc
+
+set(handles.axes8,'Visible','off');
+syms a x x1 x2
+f=1+0.3*x-a*x^2;
+
+% ===============================Определение точек равновесия периода T = 1
+f_T1 = f
+xe_T1 = solve(f_T1 - x,'x')
+
+% Определение значения производной в точках равновесия
+for k = 1 : length(xe_T1)
+        df_T1(k) = simplify(subs(diff(f_T1, x), x, xe_T1(k)));
+    end
+df_T1 = df_T1.'
+
+% Определение значений a при которых неподвижные точки теряют гиперболичность
+    a_T1 = [];
+    for k = 1 : length(xe_T1)
+        temp = double(solve(df_T1(k) - 1,'a'));
+        for r = 1 : length(temp)
+            if temp(r) > 0 & isempty(find(a_T1 == temp(r))) & isreal(temp(r))
+                a_T1 = [a_T1; temp(r)];
+            end
+        end
+        temp = double(solve(df_T1(k) + 1, 'a'));
+        for r = 1 : length(temp)
+            if temp(r) > 0 & isempty(find(a_T1 == temp(r))) & isreal(temp(r))
+                a_T1 = [a_T1; temp(r)];
+            end
+        end
+    end
+    a_T1
+    
+% Cтроим диаграмму кубического отображения      
+f_T1_in=inline(f_T1);
+xd=-2:0.01:2;
+axes(handles.axes6)
+plot(xd,f_T1_in(0.8,xd)),grid on
+title('Диаграмма кубического отобр. при Т=1, \alpha=0.4')
+
+%=============================== Определение точек равновесия периода T = 2
+    f_T2 = simplify(subs(f_T1, x, f_T1))
+    
+    xe_T2 = solve(f_T2 - x, 'x')
+    for k = 1 : length(xe_T2)
+        df_T2(k) = simplify(subs(diff(f_T2, x), x, xe_T2(k)));
+    end
+    df_T2 = df_T2.'
+    
+% Определение значений a при которых неподвижные точки теряют гиперболичность
+    a_T2 = [];
+    for k = 1 : length(xe_T2)
+        temp = double(solve(df_T2(k) - 1, 'a'));
+        for r = 1 : length(temp)
+            if temp(r) > 0 & isempty(find(a_T2  == temp(r))) & isreal(temp(r))
+                a_T2  = [a_T2 ; temp(r)];
+            end
+        end
+        temp = double(solve(df_T2(k) + 1, 'a'));
+        for r = 1 : length(temp)
+            if temp(r) > 0 & isempty(find(a_T2  == temp(r))) & isreal(temp(r))
+                a_T2  = [a_T2 ; temp(r)];
+            end
+        end
+    end
+    a_T2 
+% Cтроим диаграмму кубического отображения      
+f_T2_in=inline(f_T2);
+xd=-2:0.01:2;
+axes(handles.axes7)
+plot(xd,f_T2_in(0.9,xd)),grid on
+title('Диаграмма кубического отобр. при Т=2, \alpha=0.75')
+% =======================
+% Определяем показатель Ляпунова
+
+a=1.4;
+ h=0.1; t=0:h:50;
+X1(1)=1;X2(1)=1; 
+    dX1(1)=1+X2(1)-2*a*(X1(1));
+    dX2(1)=0.3; 
+for i=1:length(t)-1
+    X1(i+1)=1+X2(i)-a*(X1(i)^2);
+    X2(i+1)=0.3*X1(i); 
+    dX1(i+1)=1+X2(i+1)-2*a*(X1(i+1));
+    dX2(i+1)=0.3; 
+end
+L=(1/length(t))*sum(log(abs(dX1)))
+
+
+
+%======================================= Построение бифуркационной диаграммы
+    a = [];
+    x = [];
+    for k = 0 : 0.01 : 1.6
+        for r = 1 : 20
+            x = [x henon([rand rand], k, 1000)];
+            a = [a k];
+        end
+    end
+    axes(handles.axes9)
+    plot(a, x, 'k*','LineWidth', 2); grid on;
+title('Бифуркационная диаграмма')  
+
+set(handles.uitable1,'RowName',{'Первый метод'});
+set(handles.uitable1,'ColumnName',{'1.4'})
+set(handles.uitable1,'ColumnWidth',{50});
+set(handles.uitable1,'DaTa',L)
 %     switch end
     end
 % if empty
@@ -620,6 +740,15 @@ for k = 1 : iters
     x = (1-4*a)*x0+4*a*x0^3;
     x0 = x;
 end
+
+function [x1 x2]= henon(x0, a, iters)
+ 
+for k = 1 : iters
+    x1 = 1+x0(2)-a*x0(1)^2;
+    x2=0.3*x0(1);
+    x0 = [x1 x2];
+end
+
 
 % --- Executes on button press in checkbox1.
 function checkbox1_Callback(hObject, eventdata, handles)
